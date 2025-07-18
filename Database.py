@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Iterable, Any
 
 
 class DatabaseAdapter:
@@ -7,6 +8,9 @@ class DatabaseAdapter:
             self.initTables()
 
     def __del__(self):
+        pass
+
+    def executeSql(self, query: str, data_values: Iterable[Any]) -> None:
         pass
 
     def clearDatabase(self) -> None:
@@ -24,6 +28,15 @@ class DatabaseAdapter:
     def getNextId(self, name: str) -> int:
         return 0
 
+    def selectData(self, query: str, data_values: Any) -> list[Any]:
+        return []
+
+    def getAllIds(self, name: str) -> list[int]:
+        if name in self.tableNames():
+            result = self.selectData("SELECT id FROM " + name + " ;", [])
+            return result
+        return []
+
     def tableNames(self) -> list[str]:
         return ["Book", "Series", "BookToSeries"]
 
@@ -36,6 +49,9 @@ class Sqlite(DatabaseAdapter):
 
     def __del__(self):
         self.conn.close()
+
+    def executeSql(self, query: str, data_values: Iterable[Any]) -> None:
+        self.cursor.executemany(query, data_values)
 
     def initTables(self):
         self.cursor.execute(
@@ -89,6 +105,10 @@ class Sqlite(DatabaseAdapter):
         )
         result = self.cursor.fetchone()
         return result is not None
+
+    def selectData(self, query: str, data_values: Any) -> list[Any]:
+        self.cursor.execute(query, data_values)
+        return self.cursor.fetchall()
 
     def hasNeccessaryTables(self) -> bool:
         return all(self.hasTable(table) for table in self.tableNames())

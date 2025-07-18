@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from Database import Sqlite
-from Book import Book, Series
+from Book import Book, Series, getAllBooks
 
 
 class MyFrame:
@@ -32,14 +32,14 @@ if __name__ == "__main__":
 
     db = Sqlite("data.sqlite")
 
-    book1 = Book(db, "test")
-    book2 = Book(db, "test2")
-    book3 = Book(db, "test3")
-    book4 = Book(db, "test4")
-    book5 = Book(db, "test5")
-    book6 = Book(db, "test6")
+    book1 = Book(db, "test", "a1")
+    book2 = Book(db, "test32", "a2")
+    book3 = Book(db, "test3", "a3")
+    book4 = Book(db, "testt4", "a4")
+    book5 = Book(db, "test5", "a5")
+    book6 = Book(db, "test6", "a6")
 
-    serie = Series([book1, book2, book3, Book(db, "book4")])
+    serie = Series([book1, book2, book3, Book(db, 1)])
     serie -= book2
     serie += book5
 
@@ -52,8 +52,12 @@ if __name__ == "__main__":
 
     frame = MyFrame(app)
 
+    serie2.store()
+
     db.store()
 
+    allBooks = getAllBooks(db)
+    print(allBooks)
     #    if Shelf.Book("test4") in serie:
     if book3 in serie:
         print("ok")
